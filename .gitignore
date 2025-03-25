@@ -1,3 +1,8 @@
+# Ignore Visual Studio temporary files and build results
+bin/
+obj/
+.vs/
+
 # User-specific files
 *.rsuser
 *.suo
