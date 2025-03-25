@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CreateDatabase.sql = CreateDatabase.sql
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApp.Test", "..\WeatherApi.Test\WeatherApp.Test.csproj", "{90EFBA70-D467-4415-AE2E-BCF0BF793AD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.Test", "..\WeatherApi.Test\WeatherApp.Test.csproj", "{90EFBA70-D467-4415-AE2E-BCF0BF793AD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApp.Core", "..\WeatherApp.Core\WeatherApp.Core.csproj", "{446F7362-6D1F-4A47-BB33-28331171E809}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.Core", "..\WeatherApp.Core\WeatherApp.Core.csproj", "{446F7362-6D1F-4A47-BB33-28331171E809}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
