@@ -1,6 +1,6 @@
 # Ignore Visual Studio temporary files and build results
-bin/
-obj/
+WeatherApp.Api/bin/
+WeatherApp.Api/obj/
 .vs/
 
 # User-specific files
