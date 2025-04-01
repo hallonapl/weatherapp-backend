@@ -1,24 +1,49 @@
 using WeatherApp.Api.Extensions;
+using WeatherApp.Api.Services.Hosted;
+using WeatherApp.Core.Clients;
+using WeatherApp.Core.Configuration;
 using WeatherApp.Core.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddServices();
-builder.Services.AddCoreServices();
+var connectionString = builder.Configuration.GetConnectionString("WeatherDataDb");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new ArgumentNullException("Connection string is not configured");
+}
+builder.Services.AddCoreServices(connectionString);
 
+builder.Services.AddOptions<WeatherDataClientSettings>()
+        .Configure<IConfiguration>((settings, configuration) =>
+        {
+            configuration.GetSection("WeatherDataClientSettings").Bind(settings);
+        });
+builder.Services.AddHttpClient(nameof(WeatherDataClient), client =>
+{
+    var baseUrl = builder.Configuration.GetSection("WeatherDataClientSettings").GetValue<string>("BaseUrl");
+    if(string.IsNullOrWhiteSpace(baseUrl))
+    {
+        throw new ArgumentNullException("BaseUrl is not configured");
+    }
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+builder.Services.AddHostedService<WeatherReportFetchService>();
+
+builder.Services.AddLogging(); //Configure logging to write to db.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddLogging(); //Configure logging to write to db.
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI();
-app.UseHttpsRedirection(); //Swagger over https...
 
 app.UseAuthorization();
 

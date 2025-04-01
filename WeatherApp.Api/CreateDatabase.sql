@@ -1,26 +1,22 @@
-﻿-- Create the WeatherData database
-CREATE DATABASE WeatherData;
-GO
+CREATE DATABASE Weather;
 
--- Use the WeatherData database
-USE WeatherData;
-GO
+GO;
 
--- Create the WeatherData table
-CREATE TABLE WeatherData (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    City NVARCHAR(100) NOT NULL,
-    Temperature DECIMAL(5,2) NOT NULL,
+USE Weather;
+
+GO;
+
+CREATE TABLE WeatherReport (
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    FetchedTimeStamp DATETIME NOT NULL,
+    Country NVARCHAR(100) NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    Temperature FLOAT NOT NULL,
+    TemperatureFeelsLike FLOAT NOT NULL,
+    TemperatureMin FLOAT NOT NULL,
+    TemperatureMax FLOAT NOT NULL,
+    Pressure INT NOT NULL,
     Humidity INT NOT NULL,
-    WeatherDescription NVARCHAR(255),
-    DateRecorded DATETIME NOT NULL DEFAULT GETDATE()
+    SeaLevel INT NOT NULL,
+    GroundLevel INT NOT NULL
 );
-GO
-
--- Create the Logs table
-CREATE TABLE Logs (
-    LogId INT PRIMARY KEY IDENTITY(1,1),
-    LogMessage NVARCHAR(1000) NOT NULL,
-    LogDate DATETIME NOT NULL DEFAULT GETDATE()
-);
-GO

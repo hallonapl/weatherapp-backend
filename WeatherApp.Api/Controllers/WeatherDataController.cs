@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WeatherApp.Api.Models;
 using WeatherApp.Api.Services;
+using WeatherApp.Core.Models;
 
 namespace WeatherApp.Api.Controllers
 {
@@ -19,9 +19,18 @@ namespace WeatherApp.Api.Controllers
 
         [HttpGet]
         [Route("weather")]
-        public async Task<ActionResult<IEnumerable<WeatherDatum>>> GetWeatherData()
+        public async Task<ActionResult<IEnumerable<WeatherPayload>>> GetWeatherDataAsync(CancellationToken cancellationToken)
         {
-            var result = await _weatherDataService.GetWeatherDataAsync();
+            var result = await _weatherDataService.GetWeatherDataAsync(cancellationToken);
+            return Ok(result);
+        }
+
+
+        [HttpPost]
+        [Route("weather/fetch")]
+        public async Task<ActionResult<IEnumerable<WeatherPayload>>> FetchWeatherAsync(CancellationToken cancellationToken)
+        {
+            var result = await _weatherDataService.Fetch(cancellationToken);
             return Ok(result);
         }
     }

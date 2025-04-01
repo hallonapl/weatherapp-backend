@@ -7,12 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.Api", "WeatherAp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E8DF769B-A731-4BF0-8631-61C42ADF780D}"
 	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
 		CreateDatabase.sql = CreateDatabase.sql
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.Test", "..\WeatherApi.Test\WeatherApp.Test.csproj", "{90EFBA70-D467-4415-AE2E-BCF0BF793AD9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.Core", "..\WeatherApp.Core\WeatherApp.Core.csproj", "{446F7362-6D1F-4A47-BB33-28331171E809}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApp.Test", "..\WeatherApp.Test\WeatherApp.Test.csproj", "{48B8E248-3D88-41E4-9DFF-706AE3AB78E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,14 +25,14 @@ Global
 		{427523DF-7590-48A8-B7D8-D41B5666FEF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{427523DF-7590-48A8-B7D8-D41B5666FEF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{427523DF-7590-48A8-B7D8-D41B5666FEF4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{90EFBA70-D467-4415-AE2E-BCF0BF793AD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{90EFBA70-D467-4415-AE2E-BCF0BF793AD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{90EFBA70-D467-4415-AE2E-BCF0BF793AD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{90EFBA70-D467-4415-AE2E-BCF0BF793AD9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{446F7362-6D1F-4A47-BB33-28331171E809}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{446F7362-6D1F-4A47-BB33-28331171E809}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{446F7362-6D1F-4A47-BB33-28331171E809}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{446F7362-6D1F-4A47-BB33-28331171E809}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48B8E248-3D88-41E4-9DFF-706AE3AB78E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48B8E248-3D88-41E4-9DFF-706AE3AB78E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48B8E248-3D88-41E4-9DFF-706AE3AB78E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48B8E248-3D88-41E4-9DFF-706AE3AB78E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
