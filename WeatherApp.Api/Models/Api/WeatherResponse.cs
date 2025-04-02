@@ -1,17 +1,25 @@
 ﻿namespace WeatherApp.Api.Models.Api
 {
-    public record WeatherResponse(
-        Guid Id,
-        DateTime FetchedTimeStamp,
-        string Country,
-        string Name,
-        double Temperature,
-        double TemperatureFeelsLike,
-        double TemperatureMin,
-        double TemperatureMax,
-        int Pressure,
-        int Humidity,
-        int SeaLevel,
-        int GroundLevel
+    public record WeatherResponse
+        (
+            DateTime LastUpdated,
+            string Country,
+            string City,
+            IEnumerable<WeatherMeasurement> WeatherMeasurements
         );
+
+    public record WeatherMeasurement
+        (
+            DateTime TimeStamp,
+            double Temperature,
+            double TemperatureFeelsLike,
+            double TemperatureMin,
+            double TemperatureMax,
+            int Pressure,
+            int Humidity,
+            int SeaLevel,
+            int GroundLevel
+        );
+
+
 }

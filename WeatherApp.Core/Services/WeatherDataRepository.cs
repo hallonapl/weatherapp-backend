@@ -1,14 +1,15 @@
 ﻿using Dapper;
 using WeatherApp.Core.DataAccess;
 using WeatherApp.Core.Exceptions;
-using WeatherApp.Core.Models;
+using WeatherApp.Core.Models.Entities;
 
 namespace WeatherApp.Core.Services
 {
     public interface IWeatherDataRepository
     {
-        Task<IEnumerable<WeatherReport>> GetWeatherDataAsync(CancellationToken cancellationToken);
-        Task StoreWeatherDataAsync(WeatherReport weatherData, CancellationToken cancellationToken);
+        Task<IEnumerable<WeatherEntity>> GetWeatherDataAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<WeatherEntity>> GetWeatherDataByCityAsync(string cityName, CancellationToken cancellationToken);
+        Task StoreWeatherDataAsync(WeatherEntity weatherData, CancellationToken cancellationToken);
     }
 
     public class WeatherDataRepository : IWeatherDataRepository
@@ -20,14 +21,14 @@ namespace WeatherApp.Core.Services
             _dbConnectionFactory = dbConnectionFactory;
         }
 
-        public async Task<IEnumerable<WeatherReport>> GetWeatherDataAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<WeatherEntity>> GetWeatherDataAsync(CancellationToken cancellationToken)
         {
             using (var connection = _dbConnectionFactory.GetConnection())
             {
                 await connection.OpenAsync(cancellationToken);
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var result = await connection.QueryAsync<WeatherReport>(
+                    var result = await connection.QueryAsync<WeatherEntity>(
                         SqlQuery.GetWeatherReports,
                         transaction: transaction
                     );
@@ -36,8 +37,25 @@ namespace WeatherApp.Core.Services
                 }
             }
         }
+        public async Task<IEnumerable<WeatherEntity>> GetWeatherDataByCityAsync(string cityName, CancellationToken cancellationToken)
+        {
+            using (var connection = _dbConnectionFactory.GetConnection())
+            {
+                await connection.OpenAsync(cancellationToken);
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var result = await connection.QueryAsync<WeatherEntity>(
+                        SqlQuery.GetWeatherReportsByCity,
+                        new { Name = cityName },
+                        transaction: transaction
+                    );
+                    transaction.Commit();
+                    return result;
+                }
+            }
+        }
 
-        public async Task StoreWeatherDataAsync(WeatherReport weatherData, CancellationToken cancellationToken)
+        public async Task StoreWeatherDataAsync(WeatherEntity weatherData, CancellationToken cancellationToken)
         {
             using (var connection = _dbConnectionFactory.GetConnection())
             {
@@ -96,6 +114,26 @@ namespace WeatherApp.Core.Services
                 GroundLevel
             FROM
                 WeatherReport
+        ";
+
+        public static string GetWeatherReportsByCity = @"
+            SELECT
+                Id,
+                FetchedTimeStamp,
+                Country,
+                Name,
+                Temperature,
+                TemperatureFeelsLike,
+                TemperatureMin,
+                TemperatureMax,
+                Pressure,
+                Humidity,
+                SeaLevel,
+                GroundLevel
+            FROM
+                WeatherReport
+            WHERE
+                Name = @Name
         ";
 
         public static string InsertWeatherReport = @"

@@ -9,6 +9,8 @@ namespace WeatherApp.Api.Services.Hosted
     {
         private readonly ILogger<WeatherReportFetchService> _logger;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEnumerable<string> Cities = new List<string> { "London", "Paris", "Berlin", "Madrid", "Rome" };
+
 
         public WeatherReportFetchService(ILogger<WeatherReportFetchService> logger, IServiceProvider serviceProvider)
         {
@@ -31,15 +33,17 @@ namespace WeatherApp.Api.Services.Hosted
             using var scope = _serviceProvider.CreateScope();
             var weatherDataClient = scope.ServiceProvider.GetRequiredService<IWeatherDataClient>();
             var weatherDataService = scope.ServiceProvider.GetRequiredService<IWeatherDataService>();
-            var cityName = "London";
-            try
+            foreach (var cityName in Cities) 
             {
-                var response = await weatherDataClient.GetWeatherReportForCityAsync(cityName, cancellationToken);
-                await weatherDataService.StoreWeatherDataAsync(response, cancellationToken);
-            }
-            catch (WeatherDataClientFetchException)
-            {
-                _logger.LogWarning("Failed to fetch weather data for {city}", cityName);
+                try
+                {
+                    var response = await weatherDataClient.GetWeatherReportForCityAsync(cityName, cancellationToken);
+                    await weatherDataService.StoreWeatherDataAsync(response, cancellationToken);
+                }
+                catch (WeatherDataClientFetchException)
+                {
+                    _logger.LogWarning("Failed to fetch weather data for {city}", cityName);
+                }
             }
         }
     }

@@ -1,19 +1,21 @@
-﻿using WeatherApp.Api.Models.Api;
+﻿using Azure;
+using WeatherApp.Api.Models.Api;
 using WeatherApp.Core.Clients;
 using WeatherApp.Core.Exceptions;
 using WeatherApp.Core.Models;
+using WeatherApp.Core.Models.Entities;
 using WeatherApp.Core.Services;
 
 namespace WeatherApp.Api.Services
 {
     public interface IWeatherDataService
     {
-        Task<IEnumerable<WeatherResponse>> GetWeatherDataAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<WeatherResponse>> GetWeatherAsync(CancellationToken cancellationToken);
 
+        Task<WeatherResponse> GetWeatherByCityAsync(string city, CancellationToken cancellationToken);
         Task StoreWeatherDataAsync(WeatherPayload weatherData, CancellationToken cancellationToken);
 
         Task<WeatherPayload> Fetch(CancellationToken cancellationToken);
-
     }
 
     public class WeatherDataService : IWeatherDataService
@@ -29,28 +31,55 @@ namespace WeatherApp.Api.Services
             _client = client;
         }
 
-        public async Task<IEnumerable<WeatherResponse>> GetWeatherDataAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<WeatherResponse>> GetWeatherAsync(CancellationToken cancellationToken)
         {
-            var data = await _weatherRepository.GetWeatherDataAsync(cancellationToken);
-            var result = data.Select(d => new WeatherResponse(
-                d.Id,
-                d.FetchedTimeStamp,
-                d.Country,
-                d.Name,
-                d.Temperature,
-                d.TemperatureFeelsLike,
-                d.TemperatureMin,
-                d.TemperatureMax,
-                d.Pressure,
-                d.Humidity,
-                d.SeaLevel,
-                d.GroundLevel));
+            var response = await _weatherRepository.GetWeatherDataAsync(cancellationToken);
+
+            List<WeatherResponse> result = new();
+
+            var weatherByCity = response.GroupBy(x => x.Name);
+            foreach (var weather in weatherByCity)
+            {
+                var cityReport = MapToWeatherResponse(weather);
+                result.Add(cityReport);
+            }
             return result;
+        }
+
+        public async Task<WeatherResponse> GetWeatherByCityAsync(string cityName, CancellationToken cancellationToken)
+        {
+            var response = await _weatherRepository.GetWeatherDataByCityAsync(cityName, cancellationToken);
+
+            var result = MapToWeatherResponse(response);
+            return result;
+        }
+
+        private WeatherResponse MapToWeatherResponse(IEnumerable<WeatherEntity> weatherEntities)
+        {
+            return new WeatherResponse(
+                LastUpdated: weatherEntities.Max(x => x.FetchedTimeStamp),
+                Country: weatherEntities.First().Country,
+                City: weatherEntities.First().Name,
+                WeatherMeasurements: weatherEntities.Select(x =>
+                    new WeatherMeasurement
+                    (
+                        TimeStamp: x.FetchedTimeStamp,
+                        Temperature: x.Temperature,
+                        TemperatureFeelsLike: x.TemperatureFeelsLike,
+                        TemperatureMin: x.TemperatureMin,
+                        TemperatureMax: x.TemperatureMax,
+                        Pressure: x.Pressure,
+                        Humidity: x.Humidity,
+                        SeaLevel: x.SeaLevel,
+                        GroundLevel: x.GroundLevel
+                    )
+                ).ToList()
+            );
         }
 
         public async Task StoreWeatherDataAsync(WeatherPayload weatherData, CancellationToken cancellationToken)
         {
-            var report = new WeatherReport
+            var report = new WeatherEntity
             (
                 Id: Guid.Empty,
                 FetchedTimeStamp: DateTime.UtcNow,
