@@ -12,7 +12,7 @@ namespace WeatherApp.Api.Services
     {
         Task<IEnumerable<WeatherResponse>> GetWeatherAsync(CancellationToken cancellationToken);
 
-        Task<WeatherResponse> GetWeatherByCityAsync(string city, CancellationToken cancellationToken);
+        Task<WeatherResponse?> GetWeatherByCityAsync(string city, CancellationToken cancellationToken);
         Task StoreWeatherDataAsync(WeatherPayload weatherData, CancellationToken cancellationToken);
 
         Task<WeatherPayload> Fetch(CancellationToken cancellationToken);
@@ -41,12 +41,15 @@ namespace WeatherApp.Api.Services
             foreach (var weather in weatherByCity)
             {
                 var cityReport = MapToWeatherResponse(weather);
-                result.Add(cityReport);
+                if (cityReport != null)
+                {
+                    result.Add(cityReport);
+                }
             }
             return result;
         }
 
-        public async Task<WeatherResponse> GetWeatherByCityAsync(string cityName, CancellationToken cancellationToken)
+        public async Task<WeatherResponse?> GetWeatherByCityAsync(string cityName, CancellationToken cancellationToken)
         {
             var response = await _weatherRepository.GetWeatherDataByCityAsync(cityName, cancellationToken);
 
@@ -54,8 +57,12 @@ namespace WeatherApp.Api.Services
             return result;
         }
 
-        private WeatherResponse MapToWeatherResponse(IEnumerable<WeatherEntity> weatherEntities)
+        private WeatherResponse? MapToWeatherResponse(IEnumerable<WeatherEntity> weatherEntities)
         {
+            if (!weatherEntities.Any())
+            {
+                return null;
+            }
             return new WeatherResponse(
                 LastUpdated: weatherEntities.Max(x => x.FetchedTimeStamp),
                 Country: weatherEntities.First().Country,
@@ -86,13 +93,13 @@ namespace WeatherApp.Api.Services
                 Country: weatherData.Sys.Country,
                 Name: weatherData.Name,
                 Temperature: weatherData.Main.Temp,
-                TemperatureFeelsLike: weatherData.Main.FeelsLike,
-                TemperatureMin: weatherData.Main.TempMin,
-                TemperatureMax: weatherData.Main.TempMax,
+                TemperatureFeelsLike: weatherData.Main.Feels_Like,
+                TemperatureMin: weatherData.Main.Temp_Min,
+                TemperatureMax: weatherData.Main.Temp_Max,
                 Pressure: weatherData.Main.Pressure,
                 Humidity: weatherData.Main.Humidity,
-                SeaLevel: weatherData.Main.SeaLevel,
-                GroundLevel: weatherData.Main.GrndLevel
+                SeaLevel: weatherData.Main.Sea_Level,
+                GroundLevel: weatherData.Main.Grnd_Level
             );
             await _weatherRepository.StoreWeatherDataAsync(report, cancellationToken);
         }

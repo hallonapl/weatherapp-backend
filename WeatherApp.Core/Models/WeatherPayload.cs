@@ -6,13 +6,13 @@
 
     public record Main(
         double Temp,
-        double FeelsLike,
-        double TempMin,
-        double TempMax,
+        double Feels_Like,
+        double Temp_Min,
+        double Temp_Max,
         int Pressure,
         int Humidity,
-        int SeaLevel,
-        int GrndLevel
+        int Sea_Level,
+        int Grnd_Level
     );
 
     public record Wind(double Speed, int Deg);

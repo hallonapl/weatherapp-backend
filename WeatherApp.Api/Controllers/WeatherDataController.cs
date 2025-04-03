@@ -48,6 +48,10 @@ namespace WeatherApp.Api.Controllers
         public async Task<ActionResult<WeatherResponse>> GetWeatherByCityAsync([FromRoute] string city, CancellationToken cancellationToken)
         {
             var result = await _weatherDataService.GetWeatherByCityAsync(city, cancellationToken);
+            if (result == null)
+            {
+                return NotFound();
+            }
             return Ok(result);
         }
 
