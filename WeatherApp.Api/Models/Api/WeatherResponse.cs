@@ -2,7 +2,7 @@
 {
     public record WeatherResponse
         (
-            DateTime LastUpdated,
+            DateTimeOffset LastUpdated,
             string Country,
             string City,
             IEnumerable<WeatherMeasurement> WeatherMeasurements
@@ -10,7 +10,7 @@
 
     public record WeatherMeasurement
         (
-            DateTime TimeStamp,
+            DateTimeOffset TimeStamp,
             double Temperature,
             double TemperatureFeelsLike,
             double TemperatureMin,

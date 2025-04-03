@@ -11,6 +11,7 @@ namespace WeatherApp.Core.Extensions
         {
             services.AddScoped<IWeatherDataRepository, WeatherDataRepository>();
             services.AddScoped<IWeatherDataClient, WeatherDataClient>();
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>(services =>
             {
                 return new SqlConnectionFactory(dbConnectionString);

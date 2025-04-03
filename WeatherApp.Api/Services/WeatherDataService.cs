@@ -11,11 +11,8 @@ namespace WeatherApp.Api.Services
     public interface IWeatherDataService
     {
         Task<IEnumerable<WeatherResponse>> GetWeatherAsync(CancellationToken cancellationToken);
-
         Task<WeatherResponse?> GetWeatherByCityAsync(string city, CancellationToken cancellationToken);
         Task StoreWeatherDataAsync(WeatherPayload weatherData, CancellationToken cancellationToken);
-
-        Task<WeatherPayload> Fetch(CancellationToken cancellationToken);
     }
 
     public class WeatherDataService : IWeatherDataService
@@ -23,12 +20,14 @@ namespace WeatherApp.Api.Services
         private readonly ILogger<WeatherDataService> _logger;
         private readonly IWeatherDataRepository _weatherRepository;
         private readonly IWeatherDataClient _client;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public WeatherDataService(ILogger<WeatherDataService> logger, IWeatherDataRepository weatherRepository, IWeatherDataClient client)
+        public WeatherDataService(ILogger<WeatherDataService> logger, IWeatherDataRepository weatherRepository, IWeatherDataClient client, IDateTimeProvider dateTimeProvider)
         {
             _logger = logger;
             _weatherRepository = weatherRepository;
             _client = client;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<IEnumerable<WeatherResponse>> GetWeatherAsync(CancellationToken cancellationToken)
@@ -64,13 +63,13 @@ namespace WeatherApp.Api.Services
                 return null;
             }
             return new WeatherResponse(
-                LastUpdated: weatherEntities.Max(x => x.FetchedTimeStamp),
+                LastUpdated: new DateTimeOffset(weatherEntities.Max(x => x.FetchedTimeStamp), TimeSpan.Zero),
                 Country: weatherEntities.First().Country,
                 City: weatherEntities.First().Name,
                 WeatherMeasurements: weatherEntities.Select(x =>
                     new WeatherMeasurement
                     (
-                        TimeStamp: x.FetchedTimeStamp,
+                        TimeStamp: new DateTimeOffset(x.FetchedTimeStamp, TimeSpan.Zero),
                         Temperature: x.Temperature,
                         TemperatureFeelsLike: x.TemperatureFeelsLike,
                         TemperatureMin: x.TemperatureMin,
@@ -89,7 +88,7 @@ namespace WeatherApp.Api.Services
             var report = new WeatherEntity
             (
                 Id: Guid.Empty,
-                FetchedTimeStamp: DateTime.UtcNow,
+                FetchedTimeStamp: DateTime.SpecifyKind(_dateTimeProvider.UtcNow, DateTimeKind.Utc),
                 Country: weatherData.Sys.Country,
                 Name: weatherData.Name,
                 Temperature: weatherData.Main.Temp,
@@ -103,21 +102,5 @@ namespace WeatherApp.Api.Services
             );
             await _weatherRepository.StoreWeatherDataAsync(report, cancellationToken);
         }
-
-        public async Task<WeatherPayload> Fetch(CancellationToken cancellationToken)
-        {
-            var cityName = "London";
-            try
-            {
-                var response = await _client.GetWeatherReportForCityAsync(cityName, cancellationToken);
-                return response;
-            }
-            catch (WeatherDataClientFetchException)
-            {
-                _logger.LogWarning("Failed to fetch weather data for {city}", cityName);
-                throw;
-            }
-        }
     }
-
 }
