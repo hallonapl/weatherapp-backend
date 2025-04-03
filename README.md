@@ -42,9 +42,3 @@
 
 - The application exposes an API that can be inspected using SwaggerUI.
 - A hosted service is started at project startup that ingests data from the openweathermap api.
-
-## Remaining Work
-
-- There are no tests in this project. That is a major oversight at the moment.
-- There is a bug in the handling of dates. They are serialized as "no locale" at the moment, which means they are misinterpreted by the client.
-The intended timezone needs to be set both in the ingestion and in the repository layer. Using DateTimeOffset structs internally would make this easier.
